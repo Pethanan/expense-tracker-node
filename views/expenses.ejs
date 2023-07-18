@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expenses List</title>
+  </head>
+  <body>
+    <h1>Expenses List</h1>
+    <ul>
+      <% if(expenses.length>0) { %> <% for(let expense of expenses) { %>
+      <li>
+        <p><%=expense.title%></p>
+        <p>$. <%= expense.amount %></p>
+        <p><%= expense.description %></p>
+        <div>
+          <a href="/edit-expense/<%= expense.id %>" class="btn">Edit</a>
+          <form action="/delete-expense" method="POST">
+            <input type="hidden" value="<%= expense.id %>" name="expenseId" />
+            <button class="btn" type="submit">Delete</button>
+          </form>
+        </div>
+      </li>
+      <% } %> <% } else {%>
+      <h1>No expense found</h1>
+      <%} %>
+    </ul>
+  </body>
+</html>
