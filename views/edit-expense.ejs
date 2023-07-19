@@ -8,11 +8,11 @@
   <body>
     <form action="/edit-expense" method="POST">
     <label>Expense Title</label>
-    <input type="text" value="<%= expense.title %>"></input>
+    <input type="text" value="<%= expense.title %>" name="title"></input>
      <label>Amount</label>
-    <input type="number" value="<%= expense.amount %>"></input> 
+    <input type="number" value="<%= expense.amount %>" name="amount"></input> 
     <label >Description</label>
-    <input type="text" value="<%= expense.description %>"></input> 
+    <input type="text" value="<%= expense.description %>"  name="description"></input> 
     <input type="hidden" value="<%= expense.id %>" name="expenseId" />
     <button type="submit">Submit</button>
     </form>

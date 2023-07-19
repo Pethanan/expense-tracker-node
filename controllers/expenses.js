@@ -45,21 +45,31 @@ exports.postEditExpense = (req, res, next) => {
   const updatedDesc = req.body.description;
   Expense.findByPk(expenseId)
     .then((expense) => {
-      Expense.update(
-        {
-          title: updatedTitle,
-          amount: updatedAmount,
-          description: updatedDesc,
-        },
-        { where: { id: expense.id } }
-      );
-      return expense;
+      expense.title = updatedTitle;
+      expense.amount = updatedAmount;
+      expense.description = updatedDesc;
+      return expense.save();
     })
     .then((result) => {
-      console.log("UPDATED PRODUCT!");
+      console.log("UPDATED PRODUCT!", result);
       res.redirect("/");
     })
     .catch((err) => console.log(err));
+};
+
+exports.postDeleteExpense = (req, res, next) => {
+  const expenseId = req.body.expenseId;
+  Expense.findByPk(expenseId)
+    .then((expense) => {
+      return expense.destroy();
+    })
+    .then((result) => {
+      console.log("Item DELETED");
+      res.redirect("/");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.getExpenses = (req, res, next) => {
@@ -70,21 +80,6 @@ exports.getExpenses = (req, res, next) => {
         pageTitle: "expenses",
         path: "expenses",
       });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-exports.postDeleteProduct = (req, res, next) => {
-  const prodId = req.body.productId;
-  Expense.destroy(prodId)
-    .then((expense) => {
-      return product.destroy();
-    })
-    .then((expense) => {
-      console.log("detroyed");
-      res.redirect("/expenses");
     })
     .catch((err) => {
       console.log(err);

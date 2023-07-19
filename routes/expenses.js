@@ -10,6 +10,7 @@ router.get("/add-expense", expensesController.getAddExpense);
 router.post("/add-expense", expensesController.postAddExpense);
 router.get("/edit-expense/:expenseId", expensesController.getEditExpense);
 router.post("/edit-expense", expensesController.postEditExpense);
+router.post("/delete-expense", expensesController.postDeleteExpense);
 
 router.get("/", expensesController.getExpenses);
 
