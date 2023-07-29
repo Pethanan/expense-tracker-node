@@ -15,7 +15,7 @@ exports.postAddExpense = (req, res, next) => {
     description,
   })
     .then((result) => {
-      res.redirect("/");
+      res.redirect("/expenses");
       console.log(result);
     })
     .catch((err) => {
@@ -52,7 +52,7 @@ exports.postEditExpense = (req, res, next) => {
     })
     .then((result) => {
       console.log("UPDATED PRODUCT!", result);
-      res.redirect("/");
+      res.redirect("/expenses");
     })
     .catch((err) => console.log(err));
 };
@@ -65,7 +65,7 @@ exports.postDeleteExpense = (req, res, next) => {
     })
     .then((result) => {
       console.log("Item DELETED");
-      res.redirect("/");
+      res.redirect("/expenses");
     })
     .catch((err) => {
       console.log(err);

@@ -11,17 +11,11 @@ app.set("views", "views");
 
 const sequelize = require("./util/database");
 
-const route = require("./routes/expenses");
+const expensesRoute = require("./routes/expenses");
+const authRoute = require("./routes/auth");
 
-// db.execute("SELECT * FROM products")
-//   .then((res) => {
-//     console.log(res);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-
-app.use(route);
+app.use("/auth", authRoute);
+app.use(expensesRoute);
 
 sequelize
   .sync()

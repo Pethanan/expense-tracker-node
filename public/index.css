@@ -1,0 +1,17 @@
+.expense-items {
+  list-style: none;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 30px;
+}
+
+.expense-item {
+  padding: 30px;
+  background-color: rgb(240, 151, 151);
+  border-radius: 3px;
+}
+
+.link-btn {
+  margin-bottom: 30px;
+  display: block;
+}
