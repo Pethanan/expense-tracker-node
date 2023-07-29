@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%=pageTitle%></title>
+  </head>
+  <body>
+    <form method="POST" action="/auth/Login">
+      <label for="user-mail">email Id</label>
+      <input id="user-mail" name="mail" type="mail" />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" />
+      <button type="submit">Login</button>
+    </form>
+    <button><a href="/auth/signup">Signup</a></button>
+  </body>
+</html>
