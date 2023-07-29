@@ -19,10 +19,17 @@ exports.postSignup = (req, res, next) => {
       return user;
     })
     .then((user) => {
-      res.redirect("/auth/signup");
+      res.redirect("/auth/error");
     })
     .catch((err) => {
       console.log(err);
       res.redirect("/auth/signup");
     });
+};
+
+exports.getError = (req, res, next) => {
+  res.render("auth/error", {
+    pageTitle: "Error",
+    error: "Duplicate Mail Id",
+  });
 };
