@@ -1,4 +1,5 @@
-const Expense = require("../models/expense");
+const bcrypt = require("bcrypt");
+
 const User = require("../models/user");
 
 exports.getSignup = (req, res, next) => {
@@ -14,11 +15,17 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ where: { mail: mail } })
     .then((user) => {
       if (!user) {
-        User.create({ name, mail, password })
-          .then((user) => {
-            res.redirect("/auth/signup");
-          })
-          .catch((err) => console.log(err));
+        const saltRounds = 10;
+        bcrypt.hash(password, saltRounds, async (err, hash) => {
+          User.create({ name, mail, password: hash })
+            .then((user) => {
+              res
+                .status(201)
+                .json({ message: "User profile Successfully created" });
+            })
+            .catch((err) => console.log(err));
+        });
+
         return;
       }
       res.render("auth/error", {
