@@ -1,21 +1,28 @@
 const Expense = require("../models/expense");
 
 exports.getAddExpense = (req, res, next) => {
+  console.log(req.userMail);
+  console.log(req.userMail);
+  console.log(req.userMail);
+
   res.render("add-expense", { pageTitle: "Add Expense" });
 };
 
 exports.postAddExpense = (req, res, next) => {
+  console.log(req.body);
   const title = req.body.title;
   const amount = +req.body.amount;
   const description = req.body.description;
+  const category = req.body.category;
 
   Expense.create({
     title,
     amount,
     description,
+    category,
   })
     .then((result) => {
-      res.redirect("/expenses");
+      res.redirect("/add-expense");
       console.log(result);
     })
     .catch((err) => {
@@ -43,11 +50,15 @@ exports.postEditExpense = (req, res, next) => {
   const updatedTitle = req.body.title;
   const updatedAmount = req.body.amount;
   const updatedDesc = req.body.description;
+  const updatedCategory = req.body.category;
+
   Expense.findByPk(expenseId)
     .then((expense) => {
       expense.title = updatedTitle;
       expense.amount = updatedAmount;
       expense.description = updatedDesc;
+      expense.category = updatedCategory;
+
       return expense.save();
     })
     .then((result) => {

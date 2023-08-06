@@ -46,23 +46,33 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const mail = req.body.mail;
   const password = req.body.password;
-  const userLoginCredentials = { mail, password };
   User.findOne({ where: { mail: mail } })
     .then((user) => {
+      console.log(user);
       if (!user) {
         res.render("auth/error", {
           pageTitle: "Authentication error",
           error: "Mail Id does not exist, please signup",
         });
         return;
-      } else if (user.password !== password) {
-        res.render("auth/error", {
-          pageTitle: "Authentication error",
-          error: "InCorrect Password",
-        });
-        return;
       }
-      res.render("auth/login", { pageTitle: "Login" });
+
+      bcrypt.compare(password, user.password, (err, result) => {
+        if (!err) {
+          res.redirect("/add-expense");
+        } else {
+          console.log(err);
+        }
+      });
+      // else if (user.password !== password) {
+      //   res.render("auth/error", {
+      //     pageTitle: "Authentication error",
+      //     error: "InCorrect Password",
+      //   });
+      //   return;
+      // }
+      // req.userMail = mail;
+      // res.redirect("/add-expense");
     })
     .catch((err) => {
       console.log(err);
