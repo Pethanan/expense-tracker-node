@@ -59,7 +59,9 @@ exports.postLogin = (req, res, next) => {
 
       bcrypt.compare(password, user.password, (err, result) => {
         if (!err) {
-          res.redirect("/add-expense");
+          User.findOne({ where: { mail: mail } }).then((user) => {
+            res.redirect("/add-expense");
+          });
         } else {
           console.log(err);
         }
