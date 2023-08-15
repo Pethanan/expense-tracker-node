@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;"
+    />
+    <title>Document</title>
+    <!-- <link rel="stylesheet" href="bootstrap.min2.css" /> -->
+  </head>
+  <body>
+    <h2>LOGIN</h2>
+    <form class="submission-form" onsubmit="login(event)">
+      <label for="email">Enter your email:</label>
+      <input
+        type="email"
+        name="email"
+        placeholder="enter your email"
+        required
+      /><br /><br />
+      <label for="password">Enter your password:</label>
+      <input
+        type="password"
+        name="password"
+        placeholder="enter your password"
+        required
+      /><br />
+      <button>Login</button>
+    </form>
+    <button onclick="forgotpassword()">Forgot password</button
+    ><br /><br /><br />
+
+    <a href="../signup/signup.html" id="id1">new user sign up now</a>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./login.js"></script>
+  </body>
+</html>

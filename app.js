@@ -1,41 +1,31 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
+const cors = require("cors");
 const User = require("./models/user");
 const Expense = require("./models/expense");
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
-
-app.set("view engine", "ejs");
-app.set("views", "views");
 
 const sequelize = require("./util/database");
 
-const expensesRoute = require("./routes/expenses");
-const authRoute = require("./routes/auth");
+const expenseRoute = require("./routes/expenses");
+const userRoute = require("./routes/user");
 
-app.use((req, res, next) => {
-  User.findByPk(2)
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => console.log(err));
-});
-
-app.use("/auth", authRoute);
-app.use(expensesRoute);
+app.use(userRoute);
+app.use(expenseRoute);
 
 User.hasMany(Expense);
-Expense.belongsTo(User);
+Expense.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
 sequelize
   .sync()
   .then((result) => {
     console.log(result);
-    app.listen(3000);
+    app.listen(4000);
   })
   .catch((err) => {
     console.log(err);

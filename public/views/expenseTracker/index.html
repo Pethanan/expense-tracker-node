@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;"
+    />
+    <title>Document</title>
+  </head>
+  <body>
+    <h2>EXPENSE TRACKER</h2>
+    <form class="submission-form" onsubmit="addNewExpense(event)">
+      <label for="expenseamount">Expense Amount:</label>
+      <input type="number" name="expenseamount" required />
+      <label for="description">Description:</label>
+      <input type="text" name="description" required />
+      <label for="category">Choose a category</label>
+      <select id="category" name="category">
+        <option value="fuel">FUEL</option>
+        <option value="food">FOOD</option>
+        <option value="electricity">ELECTRICITY</option>
+        <option value="shooping">SHOOPING</option>
+        <option value="gym">GYM</option>
+        <option value="hotel">HOTEL</option>
+        <option value="dance">DANCE</option>
+        <option value="servicing">SERVICING</option>
+        <option value="ebill">EBILL</option>
+        <option value="credit">CREDIT CARD BILL</option>
+        <option value="water">WATER BILL</option>
+        <option value="onlineshooping">ONLINE SHOOPING</option></select
+      ><br /><br />
+      <button>Add Expense</button>
+    </form>
+    <ul id="listofExpenses"></ul>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./index.js"></script>
+  </body>
+</html>

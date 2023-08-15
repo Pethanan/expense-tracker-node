@@ -9,10 +9,7 @@ const Expense = sequelize.define("expense", {
     primaryKey: true,
     autoIncrement: true,
   },
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
+
   amount: {
     type: DataTypes.DOUBLE,
     allowNull: false,

@@ -1,98 +1,72 @@
 const Expense = require("../models/expense");
 
-exports.getAddExpense = (req, res, next) => {
-  console.log(req.userMail);
-  console.log(req.userMail);
-  console.log(req.userMail);
+function isstringinvalid(string) {
+  if (!string) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
-  res.render("add-expense", { pageTitle: "Add Expense" });
-};
-
-exports.postAddExpense = (req, res, next) => {
-  console.log(req.body);
-  const title = req.body.title;
-  const amount = +req.body.amount;
-  const description = req.body.description;
-  const category = req.body.category;
-
-  Expense.create({
-    title,
-    amount,
-    description,
-    category,
-  })
-    .then((result) => {
-      res.redirect("/add-expense");
-      console.log(result);
-    })
-    .catch((err) => {
-      console.log(err);
+exports.postExpense = async (req, res) => {
+  try {
+    const { expenseAmount, expenseDescription, expenseCategory } = req.body;
+    if (
+      isstringinvalid(expenseAmount) ||
+      isstringinvalid(expenseDescription) ||
+      isstringinvalid(expenseCategory)
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "parameter is missing" });
+    }
+    await Expense.create({
+      expenseAmount,
+      expenseDescription,
+      expenseCategory,
+      userId: req.user.id,
+    }).then((expense) => {
+      return res.status(201).json({ expense, success: true });
     });
+  } catch {
+    (err) => {
+      return res.status(500).json({ success: false, error: err });
+    };
+  }
 };
 
-exports.getEditExpense = (req, res, next) => {
+exports.getExpenses = async (req, res) => {
+  let total_items;
+
+  try {
+    total_items = await Expense.count({ where: { userId: req.user.id } });
+    const expenses = await Expense.findAll({
+      where: { userId: req.user.id },
+    });
+    res.status(200).json({ expenses, success: true });
+  } catch (err) {
+    res.status(500).json({ error: err, success: false });
+  }
+};
+
+exports.deleteExpense = async (req, res) => {
   const expenseId = req.params.expenseId;
-  Expense.findByPk(expenseId)
-    .then((expense) => {
-      if (!expense) {
-        return res.redirect("/");
+  if (isstringinvalid(expenseId)) {
+    return res.status(400).json({ success: false, message: "bad parameter" });
+  }
+  Expense.destroy({ where: { id: expenseId, userId: req.user.id } })
+    .then((noofrows) => {
+      if (noofrows === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "user doesnot belong to their expenses",
+        });
       }
-      res.render("edit-expense", {
-        pageTitle: "Edit Expense",
-        expense: expense,
-      });
-    })
-    .catch((err) => console.log(err));
-};
-
-exports.postEditExpense = (req, res, next) => {
-  const expenseId = req.body.expenseId;
-  const updatedTitle = req.body.title;
-  const updatedAmount = req.body.amount;
-  const updatedDesc = req.body.description;
-  const updatedCategory = req.body.category;
-
-  Expense.findByPk(expenseId)
-    .then((expense) => {
-      expense.title = updatedTitle;
-      expense.amount = updatedAmount;
-      expense.description = updatedDesc;
-      expense.category = updatedCategory;
-
-      return expense.save();
-    })
-    .then((result) => {
-      console.log("UPDATED PRODUCT!", result);
-      res.redirect("/expenses");
-    })
-    .catch((err) => console.log(err));
-};
-
-exports.postDeleteExpense = (req, res, next) => {
-  const expenseId = req.body.expenseId;
-  Expense.findByPk(expenseId)
-    .then((expense) => {
-      return expense.destroy();
-    })
-    .then((result) => {
-      console.log("Item DELETED");
-      res.redirect("/expenses");
+      return res
+        .status(200)
+        .json({ success: true, message: "Deleted successfully" });
     })
     .catch((err) => {
-      console.log(err);
-    });
-};
-
-exports.getExpenses = (req, res, next) => {
-  Expense.findAll()
-    .then((expenses) => {
-      res.render("expenses", {
-        expenses: expenses,
-        pageTitle: "expenses",
-        path: "expenses",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
+      return res.status(500).json({ success: false, message: "failed" });
     });
 };
