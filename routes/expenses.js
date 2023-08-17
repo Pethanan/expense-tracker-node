@@ -6,10 +6,10 @@ const expenseController = require("../controllers/expenses");
 
 const router = express.Router();
 
-router.post("/addExpense", expenseController.postExpense);
-router.get("/getExpenses", auth, expenseController.getExpenses);
+router.post("/expense/addExpense", auth, expenseController.postExpense);
+router.get("/expense/getExpenses", auth, expenseController.getExpenses);
 router.delete(
-  "/deleteexpense/:expenseid",
+  "/expense/deleteExpense/:expenseId",
   auth,
   expenseController.deleteExpense
 );

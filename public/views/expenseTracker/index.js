@@ -1,17 +1,19 @@
 function addNewExpense(e) {
   e.preventDefault();
   const expenseDetails = {
-    expenseamount: e.target.expenseamount.value,
+    amount: +e.target.amount.value,
     description: e.target.description.value,
     category: e.target.category.value,
   };
+  console.log(expenseDetails);
   const token = localStorage.getItem("token");
   axios
-    .post("http://localhost:4000/expense/addexpense", expenseDetails, {
+    .post("http://localhost:4000/expense/addExpense", expenseDetails, {
       headers: { Authorization: token },
     })
     .then((response) => {
       if (response.status === 201) {
+        console.log("right place");
         addNewExpensetoUI(response.data.expense);
       }
     })
@@ -24,7 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
 
   axios
-    .get(`http://localhost:4000/expense/getexpenses`, {
+    .get(`http://localhost:4000/expense/getExpenses`, {
       headers: { Authorization: token },
     })
     .then((response) => {
@@ -51,30 +53,36 @@ function getExpenses(page) {
 }
 
 function addNewExpensetoUI(expense) {
+  console.log(expense);
+  console.log(expense);
+  console.log(expense.id);
+  console.log(expense.id);
+
   const parentElement = document.getElementById("listofExpenses");
   const expenseElemId = `expense-${expense.id}`;
   parentElement.innerHTML += `<li id=${expenseElemId}>
-    ${expense.expenseamount} - ${expense.category} - ${expense.description}
+    ${expense.amount} - ${expense.category} - ${expense.description}
     <button id="del-button" onClick='deleteExpense(event,${expense.id})'>Delete Expense</button>
     </li>`;
 }
 
-function deleteExpense(e, expenseid) {
+function deleteExpense(e, expenseId) {
+  console.log(expenseId);
   const token = localStorage.getItem("token");
   axios
-    .delete(`http://localhost:4000/expense/deleteexpense/${expenseid}`, {
+    .delete(`http://localhost:4000/expense/deleteExpense/${expenseId}`, {
       headers: { Authorization: token },
     })
     .then(() => {
-      removeExpensefromUI(expenseid);
+      removeExpensefromUI(expenseId);
     })
     .catch((err) => {
       showError(err);
     });
 }
 
-function removeExpensefromUI(expenseid) {
-  const expenseElemId = `expense-${expenseid}`;
+function removeExpensefromUI(expenseId) {
+  const expenseElemId = `expense-${expenseId}`;
   document.getElementById(expenseElemId).remove();
 }
 

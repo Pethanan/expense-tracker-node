@@ -1,6 +1,6 @@
 const Expense = require("../models/expense");
 
-function isstringinvalid(string) {
+function isStringInvalid(string) {
   if (!string) {
     return true;
   } else {
@@ -8,31 +8,33 @@ function isstringinvalid(string) {
   }
 }
 
-exports.postExpense = async (req, res) => {
-  try {
-    const { expenseAmount, expenseDescription, expenseCategory } = req.body;
-    if (
-      isstringinvalid(expenseAmount) ||
-      isstringinvalid(expenseDescription) ||
-      isstringinvalid(expenseCategory)
-    ) {
-      return res
-        .status(400)
-        .json({ success: false, message: "parameter is missing" });
-    }
-    await Expense.create({
-      expenseAmount,
-      expenseDescription,
-      expenseCategory,
-      userId: req.user.id,
-    }).then((expense) => {
-      return res.status(201).json({ expense, success: true });
-    });
-  } catch {
-    (err) => {
-      return res.status(500).json({ success: false, error: err });
-    };
+exports.postExpense = (req, res) => {
+  console.log("reached route point");
+  const { amount, description, category } = req.body;
+  console.log(req.body);
+  if (
+    isStringInvalid(amount) ||
+    isStringInvalid(description) ||
+    isStringInvalid(category)
+  ) {
+    console.log("stuick");
+    return res
+      .status(400)
+      .json({ success: false, message: "parameter is missing" });
   }
+
+  console.log("passed");
+  Expense.create({
+    amount,
+    description,
+    category,
+    userId: +req.user.id,
+  }).then((expense) => {
+    console.log(expense);
+    console.log("reached route point");
+    console.log(expense);
+    return res.status(201).json({ expense, success: true });
+  });
 };
 
 exports.getExpenses = async (req, res) => {
@@ -49,9 +51,11 @@ exports.getExpenses = async (req, res) => {
   }
 };
 
-exports.deleteExpense = async (req, res) => {
-  const expenseId = req.params.expenseId;
-  if (isstringinvalid(expenseId)) {
+exports.deleteExpense = (req, res) => {
+  const expenseId = req.params.expenseid;
+  console.log("entered route ? ");
+  console.log(req.params);
+  if (isStringInvalid(expenseId)) {
     return res.status(400).json({ success: false, message: "bad parameter" });
   }
   Expense.destroy({ where: { id: expenseId, userId: req.user.id } })
