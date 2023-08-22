@@ -86,6 +86,51 @@ function removeExpensefromUI(expenseId) {
   document.getElementById(expenseElemId).remove();
 }
 
+document.getElementById("rzp-btn").onclick = async function (e) {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      "http://localhost:4000/purchase/premium-membership",
+      { headers: { Authorization: token } }
+    );
+    console.log(response);
+    console.log(response);
+    console.log(response);
+
+    var options = {
+      key: response.data.key_id,
+      order_id: response.data.order.id,
+      // handler use for success payment
+      handler: async function (response) {
+        console.log(response);
+        const res = await axios.post(
+          "http://localhost:4000/purchase/update-transaction-status",
+          {
+            orderId: options.order_id,
+            paymentId: response.razorpay_payment_id,
+          },
+          { headers: { Authorization: token } }
+        );
+        alert("You are a premium user Now");
+        document.getElementById("rzp-button").style.visibility = "hidden";
+        document.getElementById("message").innerHTML = "you are a premium user";
+        localStorage.setItem("token", res.data.token);
+        showLeaderboard();
+      },
+    };
+
+    const rzp1 = new Razorpay(options);
+
+    rzp1.open();
+    e.preventDefault();
+    rzp1.on("payment failed", function (response) {
+      console.log(response);
+      alert("something went wrong, transaction failed");
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 function showError(err) {
   document.body.innerHTML += `<div style="color:red;">${err}</div>`;
 }
