@@ -41,17 +41,19 @@ exports.getPurchasePremium = async (req, res) => {
 
 exports.postUpdateTransactionStatus = async (req, res) => {
   try {
+    console.log("entered here");
     const { paymentId, orderId } = req.body;
     Order.findOne({ where: { orderId: orderId } })
       .then((order) => {
-        return order.update({ paymentId: paymentId });
+        return order.update({ paymentId: paymentId, status: "SUCCESSFUL" });
       })
       .then((result) => {
-        {
-          return res
-            .status(202)
-            .json({ success: true, message: "sucessful transaction" });
-        }
+        return req.user.update({ premiumUser: true });
+      })
+      .then(() => {
+        return res
+          .status(202)
+          .json({ success: true, message: "sucessful transaction" });
       })
       .catch((err) => {
         throw new Error(err);

@@ -32,7 +32,7 @@ exports.postSignup = async (req, res, next) => {
       if (err) {
         throw new Error("something went wrong");
       }
-      await User.create({ name, email, password: hash });
+      await User.create({ name, email, password: hash, premiumUser: false });
       res.status(201).json({ message: "succesfully created new user" });
     });
   } catch {
