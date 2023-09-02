@@ -1,4 +1,5 @@
 const Expense = require("../models/expense");
+const User = require("../models/user");
 
 function isStringInvalid(string) {
   if (!string) {
@@ -29,12 +30,24 @@ exports.postAddExpense = (req, res) => {
     description,
     category,
     userId: +req.user.id,
-  }).then((expense) => {
-    console.log(expense);
-    console.log("reached route point");
-    console.log(expense);
-    return res.status(201).json({ expense, success: true });
-  });
+  })
+    .then((expense) => {
+      User.findByPk(+req.user.id)
+        .then((user) =>
+          user
+            .update({ expensesTotal: user.expensesTotal + amount })
+            .then((user) => expense)
+            .catch((err) => console.log(err))
+        )
+        .catch((err) => console.log(err));
+    })
+    .then((expense) => {
+      console.log(expense);
+      console.log("reached route point");
+      console.log(expense);
+
+      return res.status(201).json({ expense, success: true });
+    });
 };
 
 exports.getExpenses = async (req, res) => {
