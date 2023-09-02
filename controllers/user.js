@@ -45,13 +45,18 @@ exports.postSignup = async (req, res, next) => {
 exports.postLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    console.log("email" + email);
+
     if (isStringInvalid(email) || isStringInvalid(password)) {
+      console.log("did no pass init test");
+
       res
         .status(400)
         .json({ message: "email or password is missing", success: false });
     }
     const user = await User.findAll({ where: { email } });
     if (user.length > 0) {
+      console.log("passed init test");
       bcrypt.compare(password, user[0].password, (err, result) => {
         if (err) {
           throw new Error("something went wrong");
@@ -60,7 +65,11 @@ exports.postLogin = async (req, res, next) => {
           res.status(200).json({
             success: true,
             message: "user logged in successfully",
-            token: generateAccessToken(user[0].id, user[0].name),
+            token: generateAccessToken(
+              user[0].id,
+              user[0].name,
+              user[0].premiumUser
+            ),
           });
         } else {
           return res
@@ -80,6 +89,21 @@ exports.postLogin = async (req, res, next) => {
   }
 };
 
-function generateAccessToken(id, name) {
-  return jwt.sign({ userId: id, name: name }, "secretkeyfortoken");
+function generateAccessToken(userId, name, premiumUser) {
+  return jwt.sign({ userId, name, premiumUser }, "secretkeyfortoken");
+}
+
+function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(jsonPayload);
 }

@@ -24,19 +24,24 @@ function addNewExpense(e) {
 
 window.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
-
-  axios
-    .get(`http://localhost:4000/expense/getExpenses`, {
-      headers: { Authorization: token },
-    })
-    .then((response) => {
-      response.data.expenses.forEach((expense) => {
-        addNewExpensetoUI(expense);
+  const decodeToken = parseJwt(token);
+  const premiumUser = decodeToken.premiumUser;
+  if (premiumUser) {
+    showPremiumUsermessage();
+    showLeaderboard();
+    axios
+      .get(`http://localhost:4000/expense/getExpenses`, {
+        headers: { Authorization: token },
+      })
+      .then((response) => {
+        response.data.expenses.forEach((expense) => {
+          addNewExpensetoUI(expense);
+        });
+      })
+      .catch((err) => {
+        showError(err);
       });
-    })
-    .catch((err) => {
-      showError(err);
-    });
+  }
 });
 
 function getExpenses(page) {
@@ -112,9 +117,8 @@ document.getElementById("rzp-btn").onclick = async function (e) {
           { headers: { Authorization: token } }
         );
         alert("You are a premium user Now");
-        document.getElementById("rzp-button").style.visibility = "hidden";
-        document.getElementById("message").innerHTML = "you are a premium user";
         localStorage.setItem("token", res.data.token);
+        showPremiumUsermessage();
         showLeaderboard();
       },
     };
@@ -133,4 +137,57 @@ document.getElementById("rzp-btn").onclick = async function (e) {
 };
 function showError(err) {
   document.body.innerHTML += `<div style="color:red;">${err}</div>`;
+}
+
+function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(jsonPayload);
+}
+
+function showPremiumUsermessage() {
+  document.getElementById("rzp-btn").style.display = "none";
+  document.getElementById("premium-user").innerHTML = "you are a premium user";
+}
+
+function showLeaderboard() {
+  const inputElement = document.createElement("input");
+  inputElement.type = "button";
+  inputElement.value = "Show Leaderboard";
+
+  // Applying the CSS styles to the button
+  inputElement.style.width = "40%";
+  inputElement.style.padding = "0.5rem";
+  inputElement.style.textTransform = "uppercase";
+  inputElement.style.borderRadius = "20px";
+  inputElement.style.cursor = "pointer";
+  inputElement.style.transition = "background-color 0.3s ease";
+
+  inputElement.onclick = async () => {
+    const token = localStorage.getItem("token");
+    const userLeaderBoardArray = await axios.get(
+      `http://localhost:4000/premium/showLeaderBoard`,
+      { headers: { Authorization: token } }
+    );
+
+    let LeaderboardElem = document.getElementById("leader-board-list");
+    LeaderboardElem.innerHTML = ""; // Clear the leaderboard content before updating
+    LeaderboardElem.innerHTML += "<h1>Leader Board</h1>";
+    userLeaderBoardArray.data.forEach((userDetails) => {
+      LeaderboardElem.innerHTML += `<li>Name - ${
+        userDetails.name
+      } | Total Expense - ${userDetails.total_cost || 0}</li>`;
+    });
+  };
+
+  document.getElementById("leader-board").appendChild(inputElement);
 }

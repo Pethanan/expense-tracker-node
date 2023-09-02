@@ -8,7 +8,7 @@ function isStringInvalid(string) {
   }
 }
 
-exports.postExpense = (req, res) => {
+exports.postAddExpense = (req, res) => {
   console.log("reached route point");
   const { amount, description, category } = req.body;
   console.log(req.body);
