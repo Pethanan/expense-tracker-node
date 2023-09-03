@@ -1,5 +1,6 @@
 const Order = require("../models/order");
 const Razorpay = require("razorpay");
+const SequelizeDB = require("../util/database");
 
 exports.getPurchasePremium = async (req, res) => {
   try {
@@ -40,25 +41,30 @@ exports.getPurchasePremium = async (req, res) => {
 };
 
 exports.postUpdateTransactionStatus = async (req, res) => {
+  const t = await SequelizeDB.transaction();
+
   try {
     console.log("entered here");
     const { paymentId, orderId } = req.body;
-    Order.findOne({ where: { orderId: orderId } })
-      .then((order) => {
-        return order.update({ paymentId: paymentId, status: "SUCCESSFUL" });
-      })
-      .then((result) => {
-        return req.user.update({ premiumUser: true });
-      })
-      .then(() => {
-        return res
-          .status(202)
-          .json({ success: true, message: "sucessful transaction" });
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
+    const order = Order.findOne({
+      where: { orderId: orderId, transaction: t },
+    });
+    await t.commit();
+    const result = order.update({
+      paymentId: paymentId,
+      status: "SUCCESSFUL",
+      transaction: t,
+    });
+
+    await t.commit();
+    await req.user.update({ premiumUser: true, transaction: t });
+
+    await t.commit();
+    return res
+      .status(202)
+      .json({ success: true, message: "sucessful transaction" });
   } catch (err) {
+    await t.rollback();
     throw new Error(err);
   }
 };

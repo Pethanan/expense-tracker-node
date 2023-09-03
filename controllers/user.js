@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const SequelizeDB = require("../util/database");
 
 function isStringInvalid(string) {
   if (!string) {
@@ -12,6 +13,8 @@ function isStringInvalid(string) {
 
 exports.postSignup = async (req, res, next) => {
   try {
+    const t = await SequelizeDB.transaction();
+
     console.log("entered here, server is working");
     const { name, email, password } = req.body;
     console.log(name);
@@ -32,7 +35,11 @@ exports.postSignup = async (req, res, next) => {
       if (err) {
         throw new Error("something went wrong");
       }
-      await User.create({ name, email, password: hash, premiumUser: false });
+      await User.create(
+        { name, email, password: hash, premiumUser: false },
+        { transaction: t }
+      );
+      await t.commit();
       res.status(201).json({ message: "succesfully created new user" });
     });
   } catch {
