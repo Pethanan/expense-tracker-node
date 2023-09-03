@@ -9,7 +9,7 @@ function isStringInvalid(string) {
   }
 }
 
-exports.postAddExpense = (req, res) => {
+exports.postAddExpense = async (req, res) => {
   console.log("reached route point");
   const { amount, description, category } = req.body;
   console.log(req.body);
@@ -18,36 +18,30 @@ exports.postAddExpense = (req, res) => {
     isStringInvalid(description) ||
     isStringInvalid(category)
   ) {
-    console.log("stuick");
+    console.log("stuck");
     return res
       .status(400)
       .json({ success: false, message: "parameter is missing" });
   }
 
   console.log("passed");
+  console.log(req.user);
+
   Expense.create({
     amount,
     description,
     category,
     userId: +req.user.id,
   })
-    .then((expense) => {
-      User.findByPk(+req.user.id)
-        .then((user) =>
-          user
-            .update({ expensesTotal: user.expensesTotal + amount })
-            .then((user) => expense)
-            .catch((err) => console.log(err))
-        )
-        .catch((err) => console.log(err));
-    })
-    .then((expense) => {
+    .then(async (expense) => {
       console.log(expense);
       console.log("reached route point");
       console.log(expense);
-
+      const user = await User.findByPk(+req.user.id);
+      await user.update({ expensesTotal: user.expensesTotal + amount });
       return res.status(201).json({ expense, success: true });
-    });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getExpenses = async (req, res) => {
