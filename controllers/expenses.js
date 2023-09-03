@@ -11,8 +11,9 @@ function isStringInvalid(string) {
 }
 
 exports.postAddExpense = async (req, res) => {
+  const t = await SequelizeDB.transaction();
+
   try {
-    const t = await SequelizeDB.transaction();
     console.log("reached route point");
     const { amount, description, category } = req.body;
     console.log(req.body);
@@ -69,29 +70,39 @@ exports.getExpenses = async (req, res) => {
 exports.deleteExpense = async (req, res) => {
   const t = await SequelizeDB.transaction();
 
-  const expenseId = req.params.expenseid;
-  console.log("entered route ? ");
-  console.log(req.params);
-  if (isStringInvalid(expenseId)) {
-    return res.status(400).json({ success: false, message: "bad parameter" });
-  }
-  Expense.destroy({
-    where: { id: expenseId, userId: req.user.id, transaction: t },
-  })
-    .then(async (noofrows) => {
-      if (noofrows === 0) {
-        return res.status(400).json({
-          success: false,
-          message: "user doesnot belong to their expenses",
-        });
-      }
-      await t.commit();
-      return res
-        .status(200)
-        .json({ success: true, message: "Deleted successfully" });
-    })
-    .catch(async (err) => {
-      await t.rollback();
-      return res.status(500).json({ success: false, message: "failed" });
+  try {
+    console.log("delete middleware");
+    const expenseId = req.params.expenseid;
+    console.log("entered route ? ");
+    console.log(req.params);
+    console.log(expenseId);
+
+    if (isStringInvalid(expenseId)) {
+      return res.status(400).json({ success: false, message: "bad parameter" });
+    }
+    console.log(expenseId);
+
+    const noofrows = await Expense.destroy({
+      where: { id: +expenseId, userId: +req.user.id },
+      transaction: t,
     });
+    await t.commit();
+    console.log(noofrows);
+
+    console.log(noofrows);
+
+    if (noofrows === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "user doesnot belong to their expenses",
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Deleted successfully" });
+  } catch (err) {
+    await t.rollback();
+    return res.status(500).json({ success: false, message: "failed" });
+  }
 };

@@ -47,14 +47,17 @@ exports.postUpdateTransactionStatus = async (req, res) => {
     console.log("entered here");
     const { paymentId, orderId } = req.body;
     const order = Order.findOne({
-      where: { orderId: orderId, transaction: t },
-    });
-    await t.commit();
-    const result = order.update({
-      paymentId: paymentId,
-      status: "SUCCESSFUL",
+      where: { orderId: orderId },
       transaction: t,
     });
+    await t.commit();
+    const result = order.update(
+      {
+        paymentId: paymentId,
+        status: "SUCCESSFUL",
+      },
+      { transaction: t }
+    );
 
     await t.commit();
     await req.user.update({ premiumUser: true, transaction: t });
