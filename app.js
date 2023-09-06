@@ -10,6 +10,7 @@ const dotenv = require("dotenv");
 
 const app = express();
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 dotenv.config();
 app.use(express.static(path.join(__dirname, "public")));

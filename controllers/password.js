@@ -24,7 +24,7 @@ exports.postForgotPassword = async (req, res) => {
       headers: {
         "X-Mailin-custom":
           "custom_header_1:custom_value_1|custom_header_2:custom_value_2",
-        "api- key": "xkeysib- xxxxxxxxxxxxxxxxx",
+        "api-key": "xkeysib- xxxxxxxxxxxxxxxxx",
         "content-type": "application/json",
         accept: "application/json",
       },
@@ -62,16 +62,11 @@ exports.getResetPassword = async (req, res) => {
     console.log(forgotPasswordRequest);
     if (forgotPasswordRequest && forgotPasswordRequest.isActive) {
       return res.status(200).send(`<html>
-                                    <script>
-                                        function formsubmitted(e){
-                                            e.preventDefault();
-                                            console.log('called')
-                                        }
-                                    </script>
+                                    
                                     <form id="reset-form" action="/password/updatePassword/${requestId}" method="POST">
                                         <label for="newPassword">Enter New password</label>
                                         <input name="newPassword" type="password" required></input>
-                                        <button type="submit">reset password</button>
+                                        <button type="submit">reset qpassword</button>
                                     </form>
                                 </html>`);
     } else if (!forgotPasswordRequest.isActive) {
@@ -94,8 +89,9 @@ exports.getResetPassword = async (req, res) => {
 
 exports.postUpdatePassword = async (req, res) => {
   try {
-    const newPassword = document.querySelector();
-    console.log(req.body);
+    console.log("Request Body:", req.body);
+
+    const newPassword = req.body.newPassword;
     const resetPasswordId = req.params.requestId;
     console.log(req.params);
     console.log(req.params.requestId);
@@ -105,6 +101,7 @@ exports.postUpdatePassword = async (req, res) => {
     const resetPasswordRequest = await ForgotPasswordRequest.findOne({
       where: { id: resetPasswordId },
     });
+
     const user = await User.findOne({
       where: { id: resetPasswordRequest.userId },
     });
@@ -123,7 +120,7 @@ exports.postUpdatePassword = async (req, res) => {
             throw new Error(err);
           }
           await user.update({ password: hash });
-
+          await resetPasswordRequest.update({ isActive: false });
           return res
             .status(201)
             .json({ message: "Successfuly updated the new password" });
