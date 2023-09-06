@@ -4,6 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const User = require("./models/user");
 const Expense = require("./models/expense");
+const ForgotPasswordRequest = require("./models/forgotPasswordRequests");
 const Order = require("./models/order");
 const dotenv = require("dotenv");
 
@@ -18,17 +19,24 @@ const sequelize = require("./util/database");
 const expenseRoute = require("./routes/expenses");
 const userRoute = require("./routes/user");
 const purchaseRoute = require("./routes/purchase");
-const PremiumRoutes = require("./routes/premium");
+const premiumRoute = require("./routes/premium");
+const passwordRoute = require("./routes/password");
 
 app.use(userRoute);
 app.use(expenseRoute);
 app.use(purchaseRoute);
-app.use(PremiumRoutes);
+app.use(premiumRoute);
+app.use(passwordRoute);
 
 User.hasMany(Expense);
 Expense.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 Order.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Order);
+ForgotPasswordRequest.belongsTo(User, {
+  constraints: true,
+  onDelete: "CASCADE",
+});
+User.hasMany(ForgotPasswordRequest);
 
 sequelize
   .sync()
