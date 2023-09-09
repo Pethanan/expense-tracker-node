@@ -162,6 +162,7 @@ function parseJwt(token) {
 function showPremiumUsermessage() {
   document.getElementById("rzp-btn").style.display = "none";
   document.getElementById("premium-user").innerHTML = "you are a premium user";
+  document.getElementById("downloadexpense").style.visibility = "visible";
 }
 
 function showLeaderboard() {
@@ -204,9 +205,25 @@ function showExpensesFilter() {
   document.getElementById("filter-expenses").appendChild(inputElement);
 }
 
-function showDownload() {
-  const inputElement = document.createElement("button");
-  inputElement.type = "button";
-  inputElement.value = "Download";
-  document.getElementById("download-btn-container").appendChild(inputElement);
+function download() {
+  const token = localStorage.getItem("token");
+  axios
+    .get("http://localhost:4000/user/download", {
+      headers: { Authorization: token },
+    })
+    .then((response) => {
+      console.log(response);
+      if (response.status === 200) {
+        var a = document.createElement("a");
+        a.href = response.data.fileURl;
+        a.download = "myexpense.csv";
+        a.click();
+        showFileURl(response.data.fileURl);
+      } else {
+        throw new Error(response.data.message);
+      }
+    })
+    .catch((err) => {
+      document.body.innerHTML += `<div style="color:red;">${err}</div>`;
+    });
 }
