@@ -29,6 +29,9 @@ window.addEventListener("DOMContentLoaded", () => {
   if (premiumUser) {
     showPremiumUsermessage();
     showLeaderboard();
+    showExpensesFilter();
+    showDownload();
+
     axios
       .get(`http://localhost:4000/expense/getExpenses`, {
         headers: { Authorization: token },
@@ -120,6 +123,8 @@ document.getElementById("rzp-btn").onclick = async function (e) {
         localStorage.setItem("token", res.data.token);
         showPremiumUsermessage();
         showLeaderboard();
+        showExpensesFilter();
+        showDownload();
       },
     };
 
@@ -190,4 +195,18 @@ function showLeaderboard() {
   };
 
   document.getElementById("leader-board").appendChild(inputElement);
+}
+
+function showExpensesFilter() {
+  const inputElement = document.createElement("button");
+  inputElement.type = "button";
+  inputElement.value = "Show Filter expenses";
+  document.getElementById("filter-expenses").appendChild(inputElement);
+}
+
+function showDownload() {
+  const inputElement = document.createElement("button");
+  inputElement.type = "button";
+  inputElement.value = "Download";
+  document.getElementById("download-btn-container").appendChild(inputElement);
 }
