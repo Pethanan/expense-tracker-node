@@ -29,8 +29,6 @@ window.addEventListener("DOMContentLoaded", () => {
   if (premiumUser) {
     showPremiumUsermessage();
     showLeaderboard();
-    showExpensesFilter();
-    showDownload();
 
     axios
       .get(`http://localhost:4000/expense/getExpenses`, {
@@ -124,7 +122,6 @@ document.getElementById("rzp-btn").onclick = async function (e) {
         showPremiumUsermessage();
         showLeaderboard();
         showExpensesFilter();
-        showDownload();
       },
     };
 
@@ -162,7 +159,7 @@ function parseJwt(token) {
 function showPremiumUsermessage() {
   document.getElementById("rzp-btn").style.display = "none";
   document.getElementById("premium-user").innerHTML = "you are a premium user";
-  document.getElementById("downloadexpense").style.visibility = "visible";
+  document.getElementById("download-expense").style.visibility = "visible";
 }
 
 function showLeaderboard() {
@@ -198,17 +195,10 @@ function showLeaderboard() {
   document.getElementById("leader-board").appendChild(inputElement);
 }
 
-function showExpensesFilter() {
-  const inputElement = document.createElement("button");
-  inputElement.type = "button";
-  inputElement.value = "Show Filter expenses";
-  document.getElementById("filter-expenses").appendChild(inputElement);
-}
-
-function download() {
+function downloadHandler() {
   const token = localStorage.getItem("token");
   axios
-    .get("http://localhost:4000/user/download", {
+    .get("http://localhost:4000/expenses/download", {
       headers: { Authorization: token },
     })
     .then((response) => {

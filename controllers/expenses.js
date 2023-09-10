@@ -106,3 +106,51 @@ exports.deleteExpense = async (req, res) => {
     return res.status(500).json({ success: false, message: "failed" });
   }
 };
+
+exports.getDownload = async (req, res, next) => {
+  console.log("req.user.isPremium", req.user.premiumUser);
+  if (!req.user.premiumUser) {
+    return res.status(400).json({ message: "only for premium user" });
+  }
+  try {
+    const expenses = await req.user.getExpenses();
+    console.log(expenses);
+    const stringifiedExpenses = JSON.stringify(expenses);
+    const userId = req.user.id;
+    const filename = `Expense${userId}/${new Date()}.txt`;
+    const fileURl = await uploadToS3(stringifiedExpenses, filename);
+    console.log(fileURl);
+    //await req.user.createFilelink({fileURl:fileURl})
+
+    res.status(200).json({ fileURl, success: true });
+  } catch (err) {
+    res.status(500).json({ fileURl: "", success: false, err: err });
+  }
+};
+
+function uploadToS3(data, filename) {
+  const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
+  const IAM_USER_ACCESS_KEY_ID = process.env.IAM_USER_ACCESS_KEY_ID;
+  const IAM_USER_SECRET_ACCESS_KEY = process.env.IAM_USER_SECRET_ACCESS_KEY;
+
+  let s3bucket = new AWS.S3({
+    accessKeyId: IAM_USER_ACCESS_KEY_ID,
+    secretAccessKey: IAM_USER_SECRET_ACCESS_KEY,
+  });
+  var params = {
+    Bucket: S3_BUCKET_NAME,
+    Key: filename,
+    Body: data,
+    ACL: "public-read",
+  };
+  return new Promise((resolve, reject) => {
+    s3bucket.upload(params, (err, s3response) => {
+      if (err) {
+        console.log("something went wrong", err);
+        reject(err);
+      } else {
+        resolve(s3response.Location);
+      }
+    });
+  });
+}
