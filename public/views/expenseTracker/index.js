@@ -217,3 +217,7 @@ function downloadHandler() {
       document.body.innerHTML += `<div style="color:red;">${err}</div>`;
     });
 }
+
+function showFileURl(filelink) {
+  document.body.innerHTML += `<a >${filelink}</a><br><a style="color:red">IF YOU WANT PREVIOUS  FILE COPY THE  URL</a>`;
+}

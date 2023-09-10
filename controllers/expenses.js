@@ -1,6 +1,7 @@
 const Expense = require("../models/expense");
 const User = require("../models/user");
 const SequelizeDB = require("../util/database");
+const AWS = require("aws-sdk");
 
 function isStringInvalid(string) {
   if (!string) {
@@ -72,7 +73,7 @@ exports.deleteExpense = async (req, res) => {
 
   try {
     console.log("delete middleware");
-    const expenseId = req.params.expenseid;
+    const expenseId = req.params.expenseId;
     console.log("entered route ? ");
     console.log(req.params);
     console.log(expenseId);
@@ -117,8 +118,11 @@ exports.getDownload = async (req, res, next) => {
     console.log(expenses);
     const stringifiedExpenses = JSON.stringify(expenses);
     const userId = req.user.id;
+
     const filename = `Expense${userId}/${new Date()}.txt`;
     const fileURl = await uploadToS3(stringifiedExpenses, filename);
+    console.log(fileURl);
+    console.log(fileURl);
     console.log(fileURl);
     //await req.user.createFilelink({fileURl:fileURl})
 
@@ -143,6 +147,8 @@ function uploadToS3(data, filename) {
     Body: data,
     ACL: "public-read",
   };
+  console.log("params", params);
+
   return new Promise((resolve, reject) => {
     s3bucket.upload(params, (err, s3response) => {
       if (err) {
