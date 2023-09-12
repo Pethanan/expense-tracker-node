@@ -23,6 +23,7 @@ function addNewExpense(e) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  const page = 1;
   const token = localStorage.getItem("token");
   const decodeToken = parseJwt(token);
   const premiumUser = decodeToken.premiumUser;
@@ -31,13 +32,14 @@ window.addEventListener("DOMContentLoaded", () => {
     showLeaderboard();
 
     axios
-      .get(`http://localhost:4000/expense/getExpenses`, {
+      .get(`http://localhost:4000/expense/getExpenses?page=${page}`, {
         headers: { Authorization: token },
       })
       .then((response) => {
         response.data.expenses.forEach((expense) => {
           addNewExpensetoUI(expense);
         });
+        showPagination(response.data.pagination);
       })
       .catch((err) => {
         showError(err);
@@ -55,6 +57,7 @@ function getExpenses(page) {
       response.data.expenses.forEach((expense) => {
         addNewExpensetoUI(expense);
       });
+      console.log(response.data.pagination);
       showPagination(response.data.pagination);
     });
 }
