@@ -53,26 +53,32 @@ exports.postAddExpense = async (req, res) => {
     console.log(err);
   }
 };
-
 exports.getExpenses = async (req, res) => {
   let total_items;
+
   const page = +req.query.page || 1;
-  const NUMBER_OF_EXPENSES_PER_PAGE = 3;
+
+  // Using the limit query parameter or defaulting to 3 if not provided
+  const limit = +req.query.limit || 5;
+
   try {
     total_items = await Expense.count({ where: { userId: req.user.id } });
+
     const expenses = await Expense.findAll({
       where: { userId: req.user.id },
-      offset: (page - 1) * NUMBER_OF_EXPENSES_PER_PAGE,
-      limit: NUMBER_OF_EXPENSES_PER_PAGE,
+      offset: (page - 1) * limit,
+      limit: limit, // use the provided limit here
     });
+
     const pagination = {
       currentPage: page,
-      hasNextPage: NUMBER_OF_EXPENSES_PER_PAGE * page < total_items,
+      hasNextPage: limit * page < total_items,
       nextPage: page + 1,
       hasPreviousPage: page > 1,
       previousPage: page - 1,
-      lastPage: Math.ceil(total_items / NUMBER_OF_EXPENSES_PER_PAGE),
+      lastPage: Math.ceil(total_items / limit),
     };
+
     res.status(200).json({ expenses, pagination, success: true });
   } catch (err) {
     res.status(500).json({ error: err, success: false });

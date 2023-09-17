@@ -46,6 +46,17 @@
     <div id="leader-board"></div>
     <div id="leader-board-list"></div>
     <div id="download-expense"></div>
+    <form id="rows-per-page-form" onsubmit="rowsPerPageHandler(event)">
+      <label for="rows">Rows per page</label>
+      <select id="rows" name="rows">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+      <button type="submit">Show Expenses</button>
+    </form>
+
     <ul id="listofExpenses"></ul>
     <div id="pagination"></div>
 

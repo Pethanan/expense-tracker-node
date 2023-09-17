@@ -27,14 +27,19 @@ window.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
   const decodeToken = parseJwt(token);
   const premiumUser = decodeToken.premiumUser;
+  const rowsPerPage = localStorage.getItem("rowsPerPage") || 3; // Fetch rowsPerPage from localStorage or default to 3
+
   if (premiumUser) {
     showPremiumUsermessage();
     showLeaderboard();
 
     axios
-      .get(`http://localhost:4000/expense/getExpenses?page=${page}`, {
-        headers: { Authorization: token },
-      })
+      .get(
+        `http://localhost:4000/expense/getExpenses?page=${page}&limit=${rowsPerPage}`,
+        {
+          headers: { Authorization: token },
+        }
+      )
       .then((response) => {
         response.data.expenses.forEach((expense) => {
           addNewExpensetoUI(expense);
@@ -47,13 +52,26 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function rowsPerPageHandler(event) {
+  event.preventDefault();
+  const rows = +event.target.rows.value;
+  localStorage.setItem("rowsPerPage", rows); // Storing user-defined rows in localStorage
+  getExpenses(1); // Fetch the expenses for the first page with the updated limit
+}
 function getExpenses(page) {
   const token = localStorage.getItem("token");
+  const rowsPerPage = localStorage.getItem("rowsPerPage") || 3; // Fetch rowsPerPage from localStorage or default to 3
+
   axios
-    .get(`http://localhost:4000/expense/getexpenses?page=${page}`, {
-      headers: { Authorization: token },
-    })
+    .get(
+      `http://localhost:4000/expense/getexpenses?page=${page}&limit=${rowsPerPage}`,
+      {
+        headers: { Authorization: token },
+      }
+    )
     .then((response) => {
+      const parentElement = document.getElementById("listofExpenses");
+      parentElement.innerHTML = ""; // Clear the existing expenses
       response.data.expenses.forEach((expense) => {
         addNewExpensetoUI(expense);
       });
