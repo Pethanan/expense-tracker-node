@@ -1,4 +1,5 @@
 const Expense = require("../models/expense");
+const Upload = require("../models/upload");
 const User = require("../models/user");
 const SequelizeDB = require("../util/database");
 const AWS = require("aws-sdk");
@@ -142,7 +143,7 @@ exports.getDownload = async (req, res, next) => {
     console.log(fileURl);
     console.log(fileURl);
     //await req.user.createFilelink({fileURl:fileURl})
-
+    Upload.create({ fileURl, userId });
     res.status(200).json({ fileURl, success: true });
   } catch (err) {
     res.status(500).json({ fileURl: "", success: false, err: err });
@@ -154,7 +155,7 @@ function uploadToS3(data, filename) {
   const IAM_USER_ACCESS_KEY_ID = process.env.IAM_USER_ACCESS_KEY_ID;
   const IAM_USER_SECRET_ACCESS_KEY = process.env.IAM_USER_SECRET_ACCESS_KEY;
 
-  let s3bucket = new AWS.S3({
+  const s3bucket = new AWS.S3({
     accessKeyId: IAM_USER_ACCESS_KEY_ID,
     secretAccessKey: IAM_USER_SECRET_ACCESS_KEY,
   });

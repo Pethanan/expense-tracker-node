@@ -13,6 +13,8 @@ const User = require("./models/user");
 const Expense = require("./models/expense");
 const ForgotPasswordRequest = require("./models/forgotPasswordRequests");
 const Order = require("./models/order");
+const Upload = require("./models/upload");
+
 const expenseRoute = require("./routes/expenses");
 const userRoute = require("./routes/user");
 const purchaseRoute = require("./routes/purchase");
@@ -51,7 +53,8 @@ ForgotPasswordRequest.belongsTo(User, {
   onDelete: "CASCADE",
 });
 User.hasMany(ForgotPasswordRequest);
-
+User.hasMany(Upload);
+Upload.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 // Server initialization
 sequelize
   .sync()
